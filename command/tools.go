@@ -1,9 +1,10 @@
-package message
+package command
 
 import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"log"
+	"change-status-go/secret"
 	"strings"
 )
 
@@ -23,6 +24,9 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", callName)): {
 			sendMessage(s, c, m.Member.Nick)
+		}
+		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", unko)): {
+			s.GuildMemberNickname(secret.GuildID,m.Message.Member.User.ID,":poop:")
 		}
 	}
 }

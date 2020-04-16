@@ -1,4 +1,4 @@
-package message
+package command
 
 var (
 	helloWorld = "Hello, world!"
