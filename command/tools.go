@@ -13,6 +13,9 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		log.Println("Error getting channel: ", err)
 		return
 	}
+	if !strings.HasPrefix(m.Content, "!") {
+		return
+	}
 	commandName := strings.Split(m.Content, " ")[0][1:]
 	switch commandName {
 		case hello:
