@@ -5,4 +5,5 @@ var(
 	usage = "!usage"
 	callName = "!name"
 	unko = "!unko"
+	uid = "!id"
 )

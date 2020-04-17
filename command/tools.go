@@ -16,15 +16,18 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	switch {
-		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", hello)): {
+		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", hello)):
 			sendMessage(s, c, helloWorld)
-		}
-		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", usage)): {
+
+		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", usage)):
 			sendMessage(s, c, usageSentence)
-		}
-		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", callName)): {
+
+		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", callName)):
 			sendMessage(s, c, m.Member.Nick)
-		}
+
+		case strings.HasPrefix(m.Content, fmt.Sprintf(uid)):
+			sendMessage(s, c, m.Author.ID)
+
 		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", unko)): {
 			s.GuildMemberNickname(secret.GuildID,m.Message.Member.User.ID,":poop:")
 		}
