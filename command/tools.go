@@ -21,22 +21,42 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", usage)):
 			sendMessage(s, c, usageSentence)
 
-		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", callName)):
-			sendMessage(s, c, m.Member.Nick)
+		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", callName)): {
+			if m.Member.Nick != "" {
+				sendMessage(s, c, m.Member.Nick)
+			} else {
+				sendMessage(s, c, m.Author.Username)
+			}
+
+		}
 
 		case strings.HasPrefix(m.Content, fmt.Sprintf(uid)):
 			sendMessage(s, c, m.Author.ID)
 
-		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", unko)): {
-			Err := s.GuildMemberNickname(m.GuildID, m.Author.ID,"💩")
-			if fmt.Sprint(Err) == "403 Forbidden" {
-				sendMessage(s, c, "権限がないので変更できません。落ちぶれましょう。")
+		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", status)): {
+			if strings.Split(m.Content, " ")[0] == "!status" {
+				Emoji := m.Content[len("!status"):]
+				Err := s.GuildMemberNickname(m.GuildID, m.Author.ID,m.Author.Username + Emoji)
+				if fmt.Sprint(Err) == `HTTP 403 Forbidden, {"message": "Missing Permissions", "code": 50013}` {
+					sendMessage(s, c, forbidden)
+				}
+				if Err != nil {
+					fmt.Println(Err)
+					sendMessage(s, c, wrong)
+				}
+				sendMessage(s, c, Emoji + "ですね。" + m.Author.Username + "、行ってらっしゃい。")
+			} else {
+				sendMessage(s, c, advise)
 			}
+
+		}
+		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", reset)):{
+			Err := s.GuildMemberNickname(m.GuildID, m.Author.ID, m.Author.Username)
 			if Err != nil {
 				fmt.Println(Err)
-				sendMessage(s, c, "あなたのコードが間違っています")
+				sendMessage(s, c, wrong)
 			}
-			sendMessage(s, c, "今から私は" + m.Member.Nick + "です。")
+			sendMessage(s, c, notify + "、"+ m.Author.Username)
 		}
 	}
 }
