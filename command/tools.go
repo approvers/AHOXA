@@ -32,7 +32,7 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		case uid:
 			sendMessage(s, c, m.Author.ID)
 		case status: {
-			Emoji := m.Content[len(status):]
+			Emoji := m.Content[8:]
 			Err :=s.GuildMemberNickname(m.GuildID, m.Author.ID, m.Author.Username + Emoji)
 			if fmt.Sprint(Err) == `HTTP 403 Forbidden, {"message": "Missing Permissions", "code": 50013}` {
 				sendMessage(s, c, forbidden)
