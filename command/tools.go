@@ -44,7 +44,7 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		}
 		case reset: {
-			Err := s.GuildNickname(m.guildID, m.Author.ID, m.Author.Username)
+			Err := s.GuildMemberNickname(m.GuildID, m.Author.ID, m.Author.Username)
 			if Err != nil {
 				fmt.Println(Err)
 				sendMessage(s, c, wrong)
