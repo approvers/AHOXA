@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"log"
-	"change-status-go/secret"
 	"strings"
 )
 
@@ -29,7 +28,15 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			sendMessage(s, c, m.Author.ID)
 
 		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", unko)): {
-			s.GuildMemberNickname(secret.GuildID,m.Message.Member.User.ID,":poop:")
+			Err := s.GuildMemberNickname(m.GuildID, m.Author.ID,"💩")
+			if fmt.Sprint(Err) == "403 Forbidden" {
+				sendMessage(s, c, "権限がないので変更できません。落ちぶれましょう。")
+			}
+			if Err != nil {
+				fmt.Println(Err)
+				sendMessage(s, c, "あなたのコードが間違っています")
+			}
+			sendMessage(s, c, "今から私は" + m.Member.Nick + "です。")
 		}
 	}
 }
