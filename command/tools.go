@@ -13,50 +13,44 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		log.Println("Error getting channel: ", err)
 		return
 	}
-
-	switch {
-		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", hello)):
+	commandName := strings.Split(m.Content, " ")[0][1:]
+	switch commandName {
+		case hello:
 			sendMessage(s, c, helloWorld)
-
-		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", usage)):
+		case usage:
 			sendMessage(s, c, usageSentence)
-
-		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", callName)): {
+		case callName: {
 			if m.Member.Nick != "" {
 				sendMessage(s, c, m.Member.Nick)
 			} else {
 				sendMessage(s, c, m.Author.Username)
 			}
-
 		}
-
-		case strings.HasPrefix(m.Content, fmt.Sprintf(uid)):
+		case uid:
 			sendMessage(s, c, m.Author.ID)
-
-		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", status)): {
-			if strings.Split(m.Content, " ")[0] == "!status" {
-				Emoji := m.Content[len("!status"):]
-				Err := s.GuildMemberNickname(m.GuildID, m.Author.ID,m.Author.Username + Emoji)
-				if fmt.Sprint(Err) == `HTTP 403 Forbidden, {"message": "Missing Permissions", "code": 50013}` {
-					sendMessage(s, c, forbidden)
-				}
-				if Err != nil {
-					fmt.Println(Err)
-					sendMessage(s, c, wrong)
-				}
-				sendMessage(s, c, Emoji + "ですね。" + m.Author.Username + "、行ってらっしゃい。")
-			} else {
-				sendMessage(s, c, advise)
+		case status: {
+			Emoji := m.Content[len(status):]
+			Err :=s.GuildMemberNickname(m.GuildID, m.Author.ID, m.Author.Username + Emoji)
+			if fmt.Sprint(Err) == `HTTP 403 Forbidden, {"message": "Missing Permissions", "code": 50013}` {
+				sendMessage(s, c, forbidden)
+				return
 			}
-
-		}
-		case strings.HasPrefix(m.Content, fmt.Sprintf("%s", reset)):{
-			Err := s.GuildMemberNickname(m.GuildID, m.Author.ID, m.Author.Username)
 			if Err != nil {
 				fmt.Println(Err)
 				sendMessage(s, c, wrong)
+				return
 			}
-			sendMessage(s, c, notify + "、"+ m.Author.Username)
+			sendMessage(s, c, Emoji + "ですね。" + m.Author.Username + "、行ってらっしゃい。")
+
+		}
+		case reset: {
+			Err := s.GuildNickname(m.guildID, m.Author.ID, m.Author.Username)
+			if Err != nil {
+				fmt.Println(Err)
+				sendMessage(s, c, wrong)
+				return
+			}
+			sendMessage(s, c, notify + "、" + m.Author.Username)
 		}
 	}
 }
