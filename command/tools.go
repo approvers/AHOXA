@@ -29,16 +29,15 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			sendMessage(s, c, sentence.Hello)
 		case usage:
 			sendMessage(s, c, sentence.Usage)
-		case callName: {
+		case callName:
 			if m.Member.Nick != "" {
 				sendMessage(s, c, m.Member.Nick)
 			} else {
 				sendMessage(s, c, m.Author.Username)
 			}
-		}
 		case uid:
 			sendMessage(s, c, m.Author.ID)
-		case status: {
+		case status:
 			Emoji := m.Content[8:]
 			Err :=s.GuildMemberNickname(m.GuildID, m.Author.ID, m.Author.Username + Emoji)
 			if Err != nil {
@@ -56,8 +55,7 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			sendMessage(s, c, fmt.Sprintf("%sですね。%s、行ってらっしゃい。", Emoji, m.Author.Username + Emoji))
 
-		}
-		case reset: {
+		case reset:
 			Err := s.GuildMemberNickname(m.GuildID, m.Author.ID, m.Author.Username)
 			if Err != nil {
 				fmt.Println(Err)
@@ -65,7 +63,6 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				return
 			}
 			sendMessage(s, c, sentence.Notify + "、" + m.Author.Username)
-		}
 	}
 }
 
