@@ -1,6 +1,7 @@
 package command
 
 import (
+	"change-status-go/sentence"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"log"
@@ -19,9 +20,9 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	commandName := strings.Split(m.Content, " ")[0][1:]
 	switch commandName {
 		case hello:
-			sendMessage(s, c, helloWorld)
+			sendMessage(s, c, sentence.Hello)
 		case usage:
-			sendMessage(s, c, usageSentence)
+			sendMessage(s, c, sentence.Usage)
 		case callName: {
 			if m.Member.Nick != "" {
 				sendMessage(s, c, m.Member.Nick)
@@ -35,12 +36,12 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Emoji := m.Content[8:]
 			Err :=s.GuildMemberNickname(m.GuildID, m.Author.ID, m.Author.Username + Emoji)
 			if fmt.Sprint(Err) == `HTTP 403 Forbidden, {"message": "Missing Permissions", "code": 50013}` {
-				sendMessage(s, c, forbidden)
+				sendMessage(s, c, sentence.Forbidden)
 				return
 			}
 			if Err != nil {
 				fmt.Println(Err)
-				sendMessage(s, c, wrong)
+				sendMessage(s, c, sentence.Wrong)
 				return
 			}
 			sendMessage(s, c, Emoji + "ですね。" + m.Author.Username + "、行ってらっしゃい。")
@@ -50,10 +51,10 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Err := s.GuildMemberNickname(m.GuildID, m.Author.ID, m.Author.Username)
 			if Err != nil {
 				fmt.Println(Err)
-				sendMessage(s, c, wrong)
+				sendMessage(s, c, sentence.Wrong)
 				return
 			}
-			sendMessage(s, c, notify + "、" + m.Author.Username)
+			sendMessage(s, c, sentence.Notify + "、" + m.Author.Username)
 		}
 	}
 }
