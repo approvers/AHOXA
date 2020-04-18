@@ -1,6 +1,6 @@
 package command
 
-var(
+const (
 	hello = "hello"
 	usage = "usage"
 	callName = "name"

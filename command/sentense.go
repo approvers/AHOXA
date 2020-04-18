@@ -1,6 +1,6 @@
 package command
 
-var (
+const (
 	advise = "usage: !status [emoji]"
 	forbidden = "権限がないので変更できません。落ちぶれましょう。"
 	helloWorld = "Hello, world!"
