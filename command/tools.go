@@ -8,7 +8,9 @@ import (
 	"strings"
 )
 
-const prefix = "%"
+const (
+	errorForbidden = `HTTP 403 Forbidden, {"message": "Missing Permissions", "code": 50013}`
+)
 
 func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	c, Err := s.State.Channel(m.ChannelID)
@@ -37,16 +39,17 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		case status: {
 			Emoji := m.Content[8:]
 			Err :=s.GuildMemberNickname(m.GuildID, m.Author.ID, m.Author.Username + Emoji)
-			if fmt.Sprint(Err) == `HTTP 403 Forbidden, {"message": "Missing Permissions", "code": 50013}` {
-				sendMessage(s, c, sentence.Forbidden)
-				return
-			}
+			if Err != nil {
+				if Err.Error() == errorForbidden {
+					sendMessage(s, c, sentence.Forbidden)
+					return
+				}
 			if Err != nil {
 				fmt.Println(Err)
 				sendMessage(s, c, sentence.Wrong)
 				return
 			}
-			sendMessage(s, c, fmt.Sprintf("%sですね。%s、行ってらっしゃい。", Emoji, m.Member.Nick))
+			sendMessage(s, c, fmt.Sprintf("%sですね。%s、行ってらっしゃい。", Emoji, m.Author.Username + Emoji))
 
 		}
 		case reset: {
