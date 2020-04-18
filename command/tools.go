@@ -9,10 +9,11 @@ import (
 )
 
 const prefix = "%"
+
 func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	c, err := s.State.Channel(m.ChannelID)
-	if err != nil {
-		log.Println("Error getting channel: ", err)
+	c, Err := s.State.Channel(m.ChannelID)
+	if Err != nil {
+		log.Println("Error getting channel: ", Err)
 		return
 	}
 	if !strings.HasPrefix(m.Content, prefix) {
@@ -62,10 +63,10 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 
 func sendMessage(s *discordgo.Session, c *discordgo.Channel, msg string) {
-	_, err := s.ChannelMessageSend(c.ID, msg)
+	_, Err := s.ChannelMessageSend(c.ID, msg)
 
 	log.Println(">>> " + msg)
-	if err != nil {
-		log.Println("Error sending message: ", err)
+	if Err != nil {
+		log.Println("Error sending message: ", Err)
 	}
 }
