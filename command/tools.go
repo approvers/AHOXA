@@ -8,13 +8,14 @@ import (
 	"strings"
 )
 
+const prefix = "%"
 func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	c, err := s.State.Channel(m.ChannelID)
 	if err != nil {
 		log.Println("Error getting channel: ", err)
 		return
 	}
-	if !strings.HasPrefix(m.Content, "!") {
+	if !strings.HasPrefix(m.Content, prefix) {
 		return
 	}
 	commandName := strings.Split(m.Content, " ")[0][1:]
