@@ -9,7 +9,9 @@ import (
 )
 
 const (
+	errorBadRequest = `HTTP 400 Bad Request, {"nick": ["Must be 32 or fewer in length."]}`
 	errorForbidden = `HTTP 403 Forbidden, {"message": "Missing Permissions", "code": 50013}`
+	prefix = "%"
 )
 
 func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -44,7 +46,10 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 					sendMessage(s, c, sentence.Forbidden)
 					return
 				}
-			if Err != nil {
+				if Err.Error() == errorBadRequest {
+					sendMessage(s, c, sentence.BadRequest)
+					return
+				}
 				fmt.Println(Err)
 				sendMessage(s, c, sentence.Wrong)
 				return

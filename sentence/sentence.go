@@ -1,7 +1,7 @@
 package sentence
 
 const (
-	Advise = "usage: !status [emoji]"
+	BadRequest = "付けられるステータスは32文字以下である必要があります。"
 	Forbidden = "権限がないので変更できません。落ちぶれましょう。"
 	Hello = "Hello, world!"
 	Notify = "名前を元に戻しました"
