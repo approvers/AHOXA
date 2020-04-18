@@ -23,7 +23,7 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if !strings.HasPrefix(m.Content, prefix) {
 		return
 	}
-	commandName := strings.Split(m.Content, " ")[0][1:]
+	commandName := strings.Split(m.Content, " ")[0][len(prefix):]
 	switch commandName {
 		case hello:
 			sendMessage(s, c, sentence.Hello)
