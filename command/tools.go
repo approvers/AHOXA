@@ -46,7 +46,7 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				sendMessage(s, c, sentence.Wrong)
 				return
 			}
-			sendMessage(s, c, Emoji + "ですね。" + m.Author.Username + "、行ってらっしゃい。")
+			sendMessage(s, c, fmt.Sprintf("%sですね。%s、行ってらっしゃい。", Emoji, m.Member.Nick))
 
 		}
 		case reset: {
