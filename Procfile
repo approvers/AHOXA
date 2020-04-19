@@ -1,1 +1,1 @@
-web: go run main.go
+worker: change-status-go
