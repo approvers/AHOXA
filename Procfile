@@ -1,1 +1,1 @@
-worker: change-status-go
+worker: ./change-status-go
