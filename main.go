@@ -2,9 +2,9 @@ package main
 
 import (
 	"change-status-go/command"
-	"change-status-go/secret"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"os"
 )
 
 var (
@@ -12,7 +12,8 @@ var (
 )
 func main() {
 	var discord, err = discordgo.New()
-	discord.Token = secret.Token
+	secretEnv := os.Getenv("SECRET")
+	discord.Token = secretEnv
 	if err != nil {
 		fmt.Println("Error logged in")
 		fmt.Println(err)
