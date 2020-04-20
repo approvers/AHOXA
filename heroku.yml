@@ -1,0 +1,4 @@
+build:
+  languages:
+    -go
+worker: change-status-go
