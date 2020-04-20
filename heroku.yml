@@ -1,6 +1,6 @@
 build:
   languages:
-    -go
+    - go
 
 run:
   worker:
