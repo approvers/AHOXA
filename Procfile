@@ -1,1 +1,1 @@
-worker: change-status-go
+worker: go run main.go
