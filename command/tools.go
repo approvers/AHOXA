@@ -25,21 +25,18 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	commandName := strings.Split(m.Content, " ")[0][len(prefix):]
 	switch commandName {
-		case hello:
-			sendMessage(s, c, sentence.Hello)
-		case usage:
-			sendMessage(s, c, sentence.Usage)
-		case callName:
-			if m.Member.Nick != "" {
-				sendMessage(s, c, m.Member.Nick)
-			} else {
-				sendMessage(s, c, m.Author.Username)
-			}
-		case uid:
-			sendMessage(s, c, m.Author.ID)
 		case status:
-			Emoji := m.Content[8:]
-			Err :=s.GuildMemberNickname(m.GuildID, m.Author.ID, m.Author.Username + Emoji)
+			operator := strings.Split(m.Content, " ")[1]
+			Emoji := strings.Split(m.Content, " ")[2]
+
+			if operator == "add" {
+				Err = s.GuildMemberNickname(m.GuildID, m.Author.ID, m.Member.Nick + Emoji)
+			} else if operator == "rm" {
+				if !strings.Contains(m.Member.Nick, Emoji) {
+					return
+				}
+				Err = s.GuildMemberNickname(m.GuildID, m.Author.ID, m.Member.Nick[:(len(m.Member.Nick) - len(Emoji))])
+			}
 			if Err != nil {
 				if Err.Error() == errorForbidden {
 					sendMessage(s, c, sentence.Forbidden)
@@ -54,15 +51,18 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				return
 			}
 			sendMessage(s, c, fmt.Sprintf("%sですね。%s、行ってらっしゃい。", Emoji, m.Author.Username + Emoji))
-
-		case reset:
-			Err := s.GuildMemberNickname(m.GuildID, m.Author.ID, m.Author.Username)
-			if Err != nil {
-				fmt.Println(Err)
-				sendMessage(s, c, sentence.Wrong)
-				return
+		case hello:
+			sendMessage(s, c, sentence.Hello)
+		case usage:
+			sendMessage(s, c, sentence.Usage)
+		case callName:
+			if m.Member.Nick != "" {
+				sendMessage(s, c, m.Member.Nick)
+			} else {
+				sendMessage(s, c, m.Author.Username)
 			}
-			sendMessage(s, c, sentence.Notify + "、" + m.Author.Username)
+		case uid:
+			sendMessage(s, c, m.Author.ID)
 	}
 }
 
