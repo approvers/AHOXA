@@ -12,6 +12,7 @@ var (
 	- ping: Pong!と返します。かわいいですね。
 =Source=
 	github.com/brokenManager/change-status-go
-　　　	` + "```"
+　　　	` + "```\n"
+	updateMessage = "ステータスを変更しました。"
 )
 
