@@ -2,6 +2,7 @@ package main
 
 import (
 	"change-status-go/secret"
+	command "change-status-go/src"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"os"
@@ -17,7 +18,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	discordBrain.AddHandler(messageCreate)
+	discordBrain.AddHandler(command.MessageCreate)
 
 	err = discordBrain.Open()
 	if err != nil {
