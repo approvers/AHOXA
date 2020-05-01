@@ -13,6 +13,5 @@ var (
 =Source=
 	github.com/brokenManager/change-status-go
 　　　	` + "```\n"
-	updateMessage = "ステータスを変更しました。"
 )
 
