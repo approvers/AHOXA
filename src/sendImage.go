@@ -85,7 +85,7 @@ func GenerateImage(session *discordgo.Session, message *discordgo.MessageCreate)
 
 	file, Err := os.Create("sample.jpeg")
 	if Err != nil {
-
+		return
 	}
 	defer file.Close()
 
@@ -93,6 +93,7 @@ func GenerateImage(session *discordgo.Session, message *discordgo.MessageCreate)
 	if Err != nil {
 		text := fmt.Sprintf("Error at encoding jpeg: %s", Err)
 		log.Println(text)
+		return
 	}
 
 	log.Println("generatedImage: process ended")
@@ -100,10 +101,12 @@ func GenerateImage(session *discordgo.Session, message *discordgo.MessageCreate)
 	file, Err = os.Open("sample.jpeg")
 	if Err != nil {
 		log.Println(Err)
+		return
 	}
 
 	_, Err = session.ChannelFileSend(message.ChannelID, "sample.jpeg", file)
 	if Err != nil {
 		log.Println(Err)
+		return
 	}
 }
