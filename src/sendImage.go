@@ -24,13 +24,13 @@ func GenerateImage(session *discordgo.Session, message *discordgo.MessageCreate)
 		return
 	}
 
-	if v, Err := strconv.ParseInt(content[1:], 16, 32); Err != nil || v <= 0 {
-		log.Println("strconv: invalid value not Hex")
+	if v, Err := strconv.ParseInt(content[1:], 16, 32); Err != nil || v < 0 {
+		log.Println("strconv: invalid value; not Hex")
 		return
 	}
 
 	colorCode := content[len("#"):]
-	if len(content) != 6 {
+	if len(colorCode) != 6 {
 		log.Println("generateImage: len(colorCode) != 6")
 		_, Err := session.ChannelMessageSend(message.ChannelID, "不正な値です。形式は16進のカラーコードである必要があります。")
 		if Err != nil {
