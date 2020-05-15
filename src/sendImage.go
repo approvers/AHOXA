@@ -77,11 +77,12 @@ func GenerateImage(session *discordgo.Session, message *discordgo.MessageCreate)
 	}
 
 	colorInfo, Err := ParseColorCode(colorCode)
-	colorImage := genImage(colorInfo)
 	if Err != nil {
 		log.Println(Err)
 		return
 	}
+
+	colorImage := genImage(colorInfo)
 
 	file, Err := os.Create("sample.jpeg")
 	if Err != nil {
