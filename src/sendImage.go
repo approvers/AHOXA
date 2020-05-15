@@ -13,17 +13,17 @@ import (
 )
 
 func ParseColorCode(colorCode string) (Result color.RGBA, Err error) {
-	red, Err := strconv.ParseInt(colorCode[0:2],16,32)
+	red, Err := strconv.ParseInt(colorCode[0:2], 16, 32)
 	if Err != nil {
 		log.Println(fmt.Sprintf("Red --- strconv.ParseInt: %s", Err))
 		return
 	}
-	green, Err := strconv.ParseInt(colorCode[2:4],16,32)
+	green, Err := strconv.ParseInt(colorCode[2:4], 16, 32)
 	if Err != nil {
 		log.Println(fmt.Sprintf("Green --- strconv.ParseInt: %s", Err))
 		return
 	}
-	blue, Err := strconv.ParseInt(colorCode[4:6],16,32)
+	blue, Err := strconv.ParseInt(colorCode[4:6], 16, 32)
 	if Err != nil {
 		log.Println(fmt.Sprintf("Blue --- strconv.ParseInt: %s", Err))
 		return
@@ -76,10 +76,6 @@ func GenerateImage(session *discordgo.Session, message *discordgo.MessageCreate)
 		return
 	}
 
-
-
-
-
 	colorInfo, Err := ParseColorCode(colorCode)
 	colorImage := genImage(colorInfo)
 	if Err != nil {
@@ -87,21 +83,21 @@ func GenerateImage(session *discordgo.Session, message *discordgo.MessageCreate)
 		return
 	}
 
-	File, Err := os.Create("sample.jpeg")
+	file, Err := os.Create("sample.jpeg")
 	if Err != nil {
 
 	}
-	defer File.Close()
+	defer file.Close()
 
-	Err = jpeg.Encode(File, colorImage, &jpeg.Options{Quality: 60})
+	Err = jpeg.Encode(file, colorImage, &jpeg.Options{Quality: 60})
 	if Err != nil {
-		text := fmt.Sprintf("Error at encoding jpeg: %s",Err)
+		text := fmt.Sprintf("Error at encoding jpeg: %s", Err)
 		log.Println(text)
 	}
 
 	log.Println("generatedImage: process ended")
 
-	file, Err := os.Open("sample.jpeg")
+	file, Err = os.Open("sample.jpeg")
 	if Err != nil {
 		log.Println(Err)
 	}
