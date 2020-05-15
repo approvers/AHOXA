@@ -1,13 +1,14 @@
 package src
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"image"
 	"image/color"
 	"image/jpeg"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -83,29 +84,28 @@ func GenerateImage(session *discordgo.Session, message *discordgo.MessageCreate)
 	}
 
 	colorImage := genImage(colorInfo)
+	var (
+		buffer     bytes.Buffer
+		fileWriter = bufio.NewWriter(&buffer)
+		fileReader = bufio.NewReader(&buffer)
+	)
 
-	file, Err := os.Create("sample.jpeg")
-	if Err != nil {
-		return
-	}
-	defer file.Close()
-
-	Err = jpeg.Encode(file, colorImage, &jpeg.Options{Quality: 60})
+	Err = jpeg.Encode(fileWriter, colorImage, &jpeg.Options{Quality: 60})
 	if Err != nil {
 		text := fmt.Sprintf("Error at encoding jpeg: %s", Err)
+		log.Println(text)
+		return
+	}
+	Err = fileWriter.Flush()
+	if Err != nil {
+		text := fmt.Sprintf("Error at io.Writer flush: %s", Err)
 		log.Println(text)
 		return
 	}
 
 	log.Println("generatedImage: process ended")
 
-	file, Err = os.Open("sample.jpeg")
-	if Err != nil {
-		log.Println(Err)
-		return
-	}
-
-	_, Err = session.ChannelFileSend(message.ChannelID, "sample.jpeg", file)
+	_, Err = session.ChannelFileSend(message.ChannelID, "sample.jpeg", fileReader)
 	if Err != nil {
 		log.Println(Err)
 		return
