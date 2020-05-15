@@ -20,6 +20,7 @@ func main() {
 
 
 	discordBrain.AddHandler(command.MessageCreate)
+	discordBrain.AddHandler(command.GenerateImage)
 
 	err = discordBrain.Open()
 	if err != nil {
