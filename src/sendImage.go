@@ -68,6 +68,9 @@ func GenerateImage(session *discordgo.Session, message *discordgo.MessageCreate)
 	img := image.NewRGBA(image.Rect(statrX, startY, width, height))
 
 	colorInfo, Err := ParseColorCode(colorCode)
+	if Err != nil {
+		log.Println(Err)
+	}
 	for x := img.Rect.Min.Y; x < img.Rect.Max.Y; x++ {
 		for y := img.Rect.Min.X; y < img.Rect.Max.X; y++ {
 			img.Set(x, y, colorInfo)
