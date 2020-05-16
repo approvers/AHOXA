@@ -1,12 +1,13 @@
 package src
 
-func fetchMessage (cmd string) string{
+func FetchMessage (cmd string)(message string, Err error){
 	switch cmd {
 	case "help":
-		return helpMessage
+		return helpMessage, nil
 	case "ping":
-		return "Pong!"
+		return "Pong!", nil
 	default:
-		return "該当するコマンドがありません`%help`を参照してください。"
+		return DefaultMessage, nil
 	}
+	return
 }

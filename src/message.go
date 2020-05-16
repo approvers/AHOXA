@@ -15,4 +15,5 @@ var (
 = Source =
 	github.com/brokenManager/change-status-go
 ` + "```\n"
+	DefaultMessage = "該当するコマンドがありません。`%help`を参照してください。"
 )
