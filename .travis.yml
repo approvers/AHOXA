@@ -1,6 +1,5 @@
 language: go
 os: linux
-go:
-  -1.14.2
+go: "1.10"
 script:
   - go test ./src/test
