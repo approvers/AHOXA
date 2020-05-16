@@ -1,5 +1,7 @@
 package src
 
+import "fmt"
+
 var (
 	HelpMessage = "```asciidoc\n" +
 `= Title =
@@ -15,5 +17,5 @@ var (
 = Source =
 	github.com/brokenManager/change-status-go
 ` + "```\n"
-	DefaultMessage = "該当するコマンドがありません。`%help`を参照してください。"
+	DefaultMessage = fmt.Sprintf("該当するコマンドがありません。`%shelp`を参照してください。",prefix)
 )
