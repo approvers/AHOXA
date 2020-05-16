@@ -2,11 +2,5 @@ language: go
 os: linux
 go:
   -1.14.2
-sudo: required
-addons:
-  apt:
-    packages:
-      - testing
-
 script:
   - go test ./src/test
