@@ -9,6 +9,9 @@ import (
 const prefix = "%"
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if m.Author.ID == s.State.User.ID {
+		return
+	}
 	if !strings.HasPrefix(m.Content, prefix) {
 		return
 	}
