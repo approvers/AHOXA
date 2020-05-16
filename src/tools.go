@@ -16,12 +16,13 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	cmd := strings.Split(m.Content, " ")[0][:len(prefix)]
+	cmd := strings.Split(m.Content, " ")[0][len(prefix):]
 	Err, _ := s.ChannelMessageSend(m.ChannelID, fetchMessage(cmd))
 	nilCheck(Err)
 }
 
 func BootNotify(s *discordgo.Session, m *discordgo.Ready) {
+	// BootNotify is sending message when this bot is booted.
 	Err, _ := s.ChannelMessageSend("699941274484080660", "BootBot! <@!622077711309078529>")
 	nilCheck(Err)
 }
