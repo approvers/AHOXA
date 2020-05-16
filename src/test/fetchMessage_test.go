@@ -26,7 +26,7 @@ func TestHelpMessage(t *testing.T) {
 }
 
 func TestFetchMessageFailed(t *testing.T) {
-	result, Err := src.FetchMessage("%as;ogha;sdg")
+	result, Err := src.FetchMessage("%unsupportedCommandTest")
 	if Err == nil {
 		t.Fatal("failed to test,please check your code.")
 	}
