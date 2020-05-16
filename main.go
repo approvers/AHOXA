@@ -1,31 +1,36 @@
 package main
 
 import (
-	"change-status-go/command"
 	"change-status-go/secret"
+	command "change-status-go/src"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
-var (
-	StopBot = make(chan bool)
-)
 func main() {
-	var discord, err = discordgo.New()
-	discord.Token = secret.Token
+	discordBrain, err := discordgo.New()
+	discordBrain.Token = secret.Token
 	if err != nil {
-		fmt.Println("Error logged in")
+		fmt.Println("Error logging in")
 		fmt.Println(err)
 	}
 
-	discord.AddHandler(command.OnMessageCreate)
 
-	err = discord.Open()
+	discordBrain.AddHandler(command.MessageCreate)
+	discordBrain.AddHandler(command.GenerateImage)
+
+	err = discordBrain.Open()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println("Listening...")
-	<-StopBot
+	fmt.Println("Bot起動完了、命令待機中")
+	discordBrain.AddHandlerOnce(command.BootNotify)
+	sc := make(chan os.Signal,1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<- sc
 	return
 }
