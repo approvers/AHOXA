@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var prefix = "%"
+const prefix = "%"
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if !strings.HasPrefix(m.Content, prefix) {
