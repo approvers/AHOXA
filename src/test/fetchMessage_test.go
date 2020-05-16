@@ -2,11 +2,10 @@ package test
 
 import (
 	"change-status-go/src"
-	"log"
 	"testing"
 )
 
-func pingMessageTest(t *testing.T) {
+func TestPingMessage(t *testing.T) {
 	result, Err := src.FetchMessage("ping")
 	if Err != nil {
 		t.Fatalf("failed at Test fetchMessage_ping: %#v", Err)
@@ -16,22 +15,22 @@ func pingMessageTest(t *testing.T) {
 	}
 }
 
-func helpMessageTest(t *testing.T) {
+func TestHelpMessage(t *testing.T) {
 	result, Err := src.FetchMessage("help")
 	if Err != nil {
 		t.Fatalf("failed at Test fetchMessage_ping: %#v", Err)
 	}
-	if result != "Pong!" {
+	if result != src.HelpMessage {
 		t.Fatalf("failed test")
 	}
 }
 
-func fetchMessageFailedTest(t *testing.T) {
-	result, Err := src.FetchMessage("%hogehoge")
+func TestFetchMessageFailed(t *testing.T) {
+	result, Err := src.FetchMessage("%as;ogha;sdg")
 	if Err == nil {
-		log.Fatal("failed to test,please check your code.")
+		t.Fatal("failed to test,please check your code.")
 	}
 	if result != src.DefaultMessage {
-		log.Fatal("not returned true message.")
+		t.Fatal("not returned true message.")
 	}
 }

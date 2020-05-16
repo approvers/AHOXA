@@ -1,0 +1,11 @@
+language: go
+os: linux
+go:
+  -1.14.2
+addons:
+  apt:
+    packages:
+      - testing
+
+script:
+  - go test ./src/test

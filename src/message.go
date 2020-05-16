@@ -1,7 +1,7 @@
 package src
 
 var (
-	helpMessage = "```asciidoc\n" +
+	HelpMessage = "```asciidoc\n" +
 `= Title =
 	something
 = Description =
