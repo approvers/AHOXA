@@ -47,8 +47,8 @@ func genImage(colorInfo color.RGBA) *image.RGBA {
 
 	img := image.NewRGBA(image.Rect(statrX, startY, width, height))
 
-	for x := img.Rect.Min.Y; x < img.Rect.Max.Y; x++ {
-		for y := img.Rect.Min.X; y < img.Rect.Max.X; y++ {
+	for y := img.Rect.Min.Y; y < img.Rect.Max.Y; y++ {
+		for x := img.Rect.Min.X; x < img.Rect.Max.X; x++ {
 			img.Set(x, y, colorInfo)
 		}
 	}
