@@ -4,14 +4,12 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/bwmarrin/discordgo"
 	"image"
 	"image/color"
 	"image/jpeg"
 	"io"
 	"log"
 	"strconv"
-	"strings"
 )
 
 func ParseColorCode(colorCode string) (Result color.RGBA, Err error) {
@@ -64,13 +62,13 @@ func GenerateImage(colorCode string) (fileReader io.Reader, Err error) {
 
 	if v, Err := strconv.ParseInt(colorCode[len("#"):], 16, 32); Err != nil || v < 0 {
 		log.Println("strconv: invalid value; not Hex")
-		return
+		return nil, Err
 	}
 
 	colorInfo, Err := ParseColorCode(colorCode)
 	if Err != nil {
 		log.Println(Err)
-		return
+		return nil, Err
 	}
 
 	colorImage := genImage(colorInfo)
