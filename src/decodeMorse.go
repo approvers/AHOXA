@@ -76,6 +76,7 @@ func decode(sentence string) (response string, Err error) {
 
 		if !found {
 			Err = errors.New(fmt.Sprintf("Not found such code: %s", part))
+			return
 		}
 
 		response += alphabet
