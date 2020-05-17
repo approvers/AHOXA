@@ -95,6 +95,10 @@ func DecodeMorse(session *discordgo.Session, message *discordgo.MessageCreate) {
 	decodeResult, Err := decode(sentence)
 	if Err != nil {
 		log.Println("Failed to decode:", Err)
+		_, Err = session.ChannelMessageSend(message.ChannelID, fmt.Sprintf("復号に失敗しました。: %s", Err))
+		if Err != nil {
+			log.Println("Error at ChannelMessageSend: ", Err)
+		}
 		return
 	}
 	_, Err = session.ChannelMessageSend(message.ChannelID, decodeResult)
