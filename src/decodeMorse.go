@@ -59,11 +59,10 @@ var alphabetTable = map[string]string{
 
 func decode(sentence string) (string, error) {
 	var response string
-	reg := regexp.MustCompile(`[ \t+]`)
+	reg := regexp.MustCompile(`[ \t]+`)
 	sentence = reg.ReplaceAllString(sentence, " ")
 	for _, part := range strings.Split(sentence, " ") {
 		if part == space {
-			response += " "
 			continue
 		}
 		for alphabet, morse := range alphabetTable {
@@ -78,7 +77,7 @@ func decode(sentence string) (string, error) {
 }
 
 func DecodeMorse(session *discordgo.Session, message *discordgo.MessageCreate) {
-	if (message.Author.ID == session.State.User.ID) || message.Author.Bot {
+	if message.Author.Bot {
 		return
 	}
 	if !strings.HasPrefix(message.Content, prefixMorseDecode) {
@@ -93,6 +92,5 @@ func DecodeMorse(session *discordgo.Session, message *discordgo.MessageCreate) {
 	_, Err = session.ChannelMessageSend(message.ChannelID, decodeResult)
 	if Err != nil {
 		log.Println("Error at ChannelMessageSend:", Err)
-		return
 	}
 }
