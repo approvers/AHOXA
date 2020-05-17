@@ -18,9 +18,9 @@ func main() {
 		fmt.Println(err)
 	}
 
-
 	discordBrain.AddHandler(command.MessageCreate)
 	discordBrain.AddHandler(command.GenerateImage)
+	discordBrain.AddHandler(command.DecodeMorse)
 
 	err = discordBrain.Open()
 	if err != nil {
@@ -29,8 +29,8 @@ func main() {
 
 	fmt.Println("Bot起動完了、命令待機中")
 	discordBrain.AddHandlerOnce(command.BootNotify)
-	sc := make(chan os.Signal,1)
+	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
-	<- sc
+	<-sc
 	return
 }
