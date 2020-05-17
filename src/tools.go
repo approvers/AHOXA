@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var prefix = "%"
+const prefix = "%"
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
@@ -18,18 +18,15 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	cmd := strings.Split(m.Content, " ")[0][len(prefix):]
 	Err, _ := s.ChannelMessageSend(m.ChannelID, fetchMessage(cmd))
-	nilCheck(Err)
+	if Err != nil {
+		log.Println("failed send message: ", Err)
+	}
 }
 
 func BootNotify(s *discordgo.Session, m *discordgo.Ready) {
 	// BootNotify is sending message when this bot is booted.
-	Err, _ := s.ChannelMessageSend("699941274484080660", "BootBot! <@!622077711309078529>")
-	nilCheck(Err)
-}
-
-func nilCheck(Err *discordgo.Message) {
+	_, Err := s.ChannelMessageSend("699941274484080660", "BootBot! <@!622077711309078529>")
 	if Err != nil {
-		log.Println("Error: ", Err)
-		return
+		log.Println("Boot failed: ", Err)
 	}
 }
