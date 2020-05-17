@@ -4,88 +4,95 @@ import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"log"
+	"regexp"
 	"strings"
 )
 
-const prefixMorseDecode = "DM"
-const prefixMorseEncode = "EM"
+const (
+	prefixMorseDecode = "DM"
+	prefixMorseEncode = "EM"
+	space             = " "
+)
 
-func decode(sentence string, wordSep string) (string, error) {
+var alphabetTable = map[string]string{
+	"a":     ".-",
+	"b":     "-...",
+	"c":     "-.-.",
+	"d":     "-..",
+	"e":     ".",
+	"f":     "..-.",
+	"g":     "--.",
+	"h":     "....",
+	"i":     "..",
+	"j":     ".---",
+	"k":     "-.-",
+	"l":     ".-..",
+	"m":     "--",
+	"n":     "-.",
+	"o":     "---",
+	"p":     ".--.",
+	"q":     "--.-",
+	"r":     ".-.",
+	"s":     "...",
+	"t":     "-",
+	"u":     "..-",
+	"v":     "...-",
+	"w":     "-..-",
+	"x":     "-..-",
+	"z":     "--..",
+	".":     ".--.-.",
+	",":     "--..--",
+	":":     "---...",
+	"?":     "..--..",
+	"'":     ".----.",
+	"-":     "-....-",
+	"(":     "-.--.",
+	")":     "-.--.-",
+	"/":     "-..-.",
+	"=":     "-...-.",
+	"+":     ".-.-.-",
+	"\"":    ".-..-.",
+	"*":     "-..-",
+	"@":     ".--.-.",
+	"amend": "........",
+}
+
+func decode(sentence string) (string, error) {
 	var response string
-	for _, s := range strings.Split(sentence, " ") {
-		if s ==wordSep {
+	reg := regexp.MustCompile(`[ \t+]`)
+	sentence = reg.ReplaceAllString(sentence, " ")
+	for _, part := range strings.Split(sentence, " ") {
+		if part == space {
 			response += " "
+			continue
 		}
-		for key, value := range alphabetTable {
-			if s != value {
-				return "[]", fmt.Errorf("Not such a code: %s", s)
+		for alphabet, morse := range alphabetTable {
+			if part == morse {
+				response += alphabet
+				break
 			}
-			response += key
-
+			return "[]", fmt.Errorf("Not such a code: %s", part)
 		}
 	}
-	return sentence, nil
+	return response, nil
 }
 
 func DecodeMorse(session *discordgo.Session, message *discordgo.MessageCreate) {
-	if message.Author.ID == session.State.User.ID {
+	if (message.Author.ID == session.State.User.ID) || message.Author.Bot {
 		return
 	}
 	if !strings.HasPrefix(message.Content, prefixMorseDecode) {
 		return
 	}
 	sentence := message.Content[2:]
-	content, Err := decode(sentence, " ")
+	decodeResult, Err := decode(sentence)
 	if Err != nil {
 		log.Println("Failed to decode:", Err)
 		return
 	}
-	_, Err = session.ChannelMessageSend(message.ChannelID, content)
+	_, Err = session.ChannelMessageSend(message.ChannelID, decodeResult)
 	if Err != nil {
 		log.Println("Error at ChannelMessageSend:", Err)
 		return
 	}
-}
-
-var alphabetTable = map[string]string{
-	"a"     : ".-",
-	"b"     : "-...",
-	"c"     : "-.-.",
-	"d"     : "-..",
-	"e"     : ".",
-	"f"     : "..-.",
-	"g"     : "--.",
-	"h"     : "....",
-	"i"     : "..",
-	"j"     : ".---",
-	"k"     : "-.-",
-	"l"     : ".-..",
-	"m"     : "--",
-	"n"     : "-.",
-	"o"     : "---",
-	"p"     : ".--.",
-	"q"     : "--.-",
-	"r"     : ".-.",
-	"s"     : "...",
-	"t"     : "-",
-	"u"     : "..-",
-	"v"     : "...-",
-	"w"     : "-..-",
-	"x"     : "-..-",
-	"z"     : "--..",
-	"."     : ".--.-.",
-	","     : "--..--",
-	":"     : "---...",
-	"?"     : "..--..",
-	"'"     : ".----.",
-	"-"     : "-....-",
-	"("     : "-.--.",
-	")"     : "-.--.-",
-	"/"     : "-..-.",
-	"="     : "-...-.",
-	"+"     : ".-.-.-",
-	"\""    : ".-..-.",
-	"*"     : "-..-",
-	"@"     : ".--.-.",
-	"amend" : "........",
 }
