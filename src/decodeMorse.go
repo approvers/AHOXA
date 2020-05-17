@@ -9,10 +9,6 @@ import (
 	"strings"
 )
 
-const (
-	prefixMorseDecode = "%decode"
-)
-
 var alphabetTable = map[string]string{
 	"a":     ".-",
 	"b":     "-...",
@@ -36,10 +32,11 @@ var alphabetTable = map[string]string{
 	"t":     "-",
 	"u":     "..-",
 	"v":     "...-",
-	"w":     "-..-",
+	"w":     ".--",
 	"x":     "-..-",
+	"y":     "-.--",
 	"z":     "--..",
-	".":     ".--.-.",
+	".":     ".-.-.-",
 	",":     "--..--",
 	":":     "---...",
 	"?":     "..--..",
@@ -49,7 +46,7 @@ var alphabetTable = map[string]string{
 	")":     "-.--.-",
 	"/":     "-..-.",
 	"=":     "-...-.",
-	"+":     ".-.-.-",
+	"+":     ".-.-.",
 	"\"":    ".-..-.",
 	"*":     "-..-",
 	"@":     ".--.-.",
@@ -88,10 +85,7 @@ func DecodeMorse(session *discordgo.Session, message *discordgo.MessageCreate) {
 	if message.Author.Bot {
 		return
 	}
-	if !strings.HasPrefix(message.Content, prefixMorseDecode) {
-		return
-	}
-	sentence := strings.TrimSpace(message.Content[len(prefixMorseDecode):])
+	sentence := strings.TrimSpace(message.Content)
 	decodeResult, Err := decode(sentence)
 	if Err != nil {
 		log.Println("Failed to decode:", Err)

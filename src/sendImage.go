@@ -8,6 +8,7 @@ import (
 	"image"
 	"image/color"
 	"image/jpeg"
+	"io"
 	"log"
 	"strconv"
 	"strings"
@@ -55,25 +56,14 @@ func genImage(colorInfo color.RGBA) *image.RGBA {
 	return img
 }
 
-func GenerateImage(session *discordgo.Session, message *discordgo.MessageCreate) {
+func GenerateImage(colorCode string) (fileReader io.Reader, Err error) {
+	var (
+		buffer     bytes.Buffer
+		fileWriter = bufio.NewWriter(&buffer)
+	)
 
-	content := strings.TrimSpace(message.Content)
-	if !strings.HasPrefix(content, "#") {
-		return
-	}
-
-	if v, Err := strconv.ParseInt(content[1:], 16, 32); Err != nil || v < 0 {
+	if v, Err := strconv.ParseInt(colorCode[len("#"):], 16, 32); Err != nil || v < 0 {
 		log.Println("strconv: invalid value; not Hex")
-		return
-	}
-
-	colorCode := content[len("#"):]
-	if len(colorCode) != 6 {
-		log.Println("generateImage: len(colorCode) must be just 6")
-		_, Err := session.ChannelMessageSend(message.ChannelID, "不正な値です。形式は16進のカラーコードである必要があります。")
-		if Err != nil {
-			log.Println(Err)
-		}
 		return
 	}
 
@@ -84,11 +74,8 @@ func GenerateImage(session *discordgo.Session, message *discordgo.MessageCreate)
 	}
 
 	colorImage := genImage(colorInfo)
-	var (
-		buffer     bytes.Buffer
-		fileWriter = bufio.NewWriter(&buffer)
-		fileReader = bufio.NewReader(&buffer)
-	)
+
+	fileReader = bufio.NewReader(&buffer)
 
 	Err = jpeg.Encode(fileWriter, colorImage, &jpeg.Options{Quality: 60})
 	if Err != nil {
@@ -104,10 +91,5 @@ func GenerateImage(session *discordgo.Session, message *discordgo.MessageCreate)
 	}
 
 	log.Println("generatedImage: process ended")
-
-	_, Err = session.ChannelFileSend(message.ChannelID, "sample.jpeg", fileReader)
-	if Err != nil {
-		log.Println(Err)
-		return
-	}
+	return
 }

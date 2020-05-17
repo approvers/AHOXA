@@ -2,25 +2,75 @@ package src
 
 import (
 	"github.com/bwmarrin/discordgo"
+	"io"
 	"log"
 	"strings"
 )
 
 const prefix = "%"
 
-func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if m.Author.ID == s.State.User.ID {
-		return
-	}
-	if !strings.HasPrefix(m.Content, prefix) {
-		return
-	}
+type messageContext struct {
+	s *discordgo.Session
+	m *discordgo.MessageCreate
+}
 
-	cmd := strings.Split(m.Content, " ")[0][len(prefix):]
-	Err, _ := s.ChannelMessageSend(m.ChannelID, fetchMessage(cmd))
+func (cxt *messageContext) messageSend(message string) (Err error) {
+	_, Err = cxt.s.ChannelMessageSend(cxt.m.ChannelID, message)
 	if Err != nil {
 		log.Println("failed send message: ", Err)
+		return
 	}
+	return
+}
+
+func (cxt *messageContext) fileSend(fileName string, data io.Reader) (Err error) {
+	_, Err = cxt.s.ChannelFileSend(cxt.m.ChannelID, fileName, data)
+	if Err != nil {
+		log.Println("failed send file: ", Err)
+		return
+	}
+	return
+}
+
+func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
+	context := messageContext{
+		session,
+		message,
+	}
+	const colorCodePrefix = "#"
+
+	if message.Author.ID == session.State.User.ID {
+		return
+	}
+	if !strings.HasPrefix(message.Content, prefix) {
+		return
+	}
+	commandBody := strings.Split(message.Content, " ")
+	switch commandBody[0][len(prefix):] {
+	case "color":
+		{
+			fileData, Err := GenerateImage(commandBody[1])
+			if Err != nil {
+				log.Println("failed to genarateImage: ", Err)
+				return
+			}
+			Err = context.fileSend("unkonow.jpeg", fileData)
+			if Err != nil {
+				log.Println("failed file send: ", Err)
+				return
+			}
+		}
+	case "ping", "help":
+		{
+			contentText := fetchMessage(commandBody[0])
+			Err := context.messageSend(contentText)
+			if Err != nil {
+				log.Println("failed send message: ", Err)
+				return
+			}
+		}
+	}
+
 }
 
 func BootNotify(s *discordgo.Session, m *discordgo.Ready) {
