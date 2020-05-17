@@ -21,6 +21,7 @@ func main() {
 
 	discordBrain.AddHandler(command.MessageCreate)
 	discordBrain.AddHandler(command.GenerateImage)
+	discordBrain.AddHandler(command.DecodeMorse)
 
 	err = discordBrain.Open()
 	if err != nil {
