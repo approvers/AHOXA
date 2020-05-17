@@ -75,7 +75,7 @@ func decode(sentence string) (response string, Err error) {
 		alphabet, found := searchTable(part)
 
 		if !found {
-			return "", errors.New(fmt.Sprintf("Not found such code: %s", part))
+			Err = errors.New(fmt.Sprintf("Not found such code: %s", part))
 		}
 
 		response += alphabet
@@ -90,7 +90,7 @@ func DecodeMorse(session *discordgo.Session, message *discordgo.MessageCreate) {
 	if !strings.HasPrefix(message.Content, prefixMorseDecode) {
 		return
 	}
-	sentence := message.Content[len(prefixMorseDecode)+1:]
+	sentence := strings.TrimSpace(message.Content[len(prefixMorseDecode):])
 	decodeResult, Err := decode(sentence)
 	if Err != nil {
 		log.Println("Failed to decode:", Err)
