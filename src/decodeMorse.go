@@ -1,6 +1,7 @@
 package src
 
 import (
+	"errors"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"log"
@@ -9,9 +10,7 @@ import (
 )
 
 const (
-	prefixMorseDecode = "DM"
-	prefixMorseEncode = "EM"
-	space             = " "
+	prefixMorseDecode = "%decode"
 )
 
 var alphabetTable = map[string]string{
@@ -57,23 +56,31 @@ var alphabetTable = map[string]string{
 	"amend": "........",
 }
 
-func decode(sentence string) (string, error) {
-	var response string
-	reg := regexp.MustCompile(`[ \t]+`)
-	sentence = reg.ReplaceAllString(sentence, " ")
-	for _, part := range strings.Split(sentence, " ") {
-		if part == space {
-			continue
-		}
-		for alphabet, morse := range alphabetTable {
-			if part == morse {
-				response += alphabet
-				break
-			}
-			return "[]", fmt.Errorf("Not such a code: %s", part)
+func searchTable(morseInput string) (string, bool) {
+	for alphabet, morse := range alphabetTable {
+		if morseInput == morse {
+			return alphabet, true
 		}
 	}
-	return response, nil
+
+	return "", false
+}
+
+func decode(sentence string) (response string, Err error) {
+	reg := regexp.MustCompile(`[ \t]+`)
+	sentence = reg.ReplaceAllString(sentence, " ")
+	log.Printf(sentence)
+	for _, part := range strings.Split(sentence, " ") {
+
+		alphabet, found := searchTable(part)
+
+		if !found {
+			return "", errors.New(fmt.Sprintf("Not found such code: %s", part))
+		}
+
+		response += alphabet
+	}
+	return
 }
 
 func DecodeMorse(session *discordgo.Session, message *discordgo.MessageCreate) {
@@ -83,7 +90,7 @@ func DecodeMorse(session *discordgo.Session, message *discordgo.MessageCreate) {
 	if !strings.HasPrefix(message.Content, prefixMorseDecode) {
 		return
 	}
-	sentence := message.Content[2:]
+	sentence := message.Content[len(prefixMorseDecode)+1:]
 	decodeResult, Err := decode(sentence)
 	if Err != nil {
 		log.Println("Failed to decode:", Err)
