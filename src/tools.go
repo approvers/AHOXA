@@ -75,7 +75,7 @@ func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 
 }
 
-func BootNotify(s *discordgo.Session, m *discordgo.Ready) {
+func BootNotify(s *discordgo.Session, _ *discordgo.Ready) {
 	// BootNotify is sending message when this bot is booted.
 	_, Err := s.ChannelMessageSend("699941274484080660", "BootBot! <@!622077711309078529>")
 	if Err != nil {
