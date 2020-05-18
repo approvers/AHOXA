@@ -38,13 +38,13 @@ func ParseColorCode(colorCode string) (Result color.RGBA, Err error) {
 
 func genImage(colorInfo color.RGBA) *image.RGBA {
 	const (
-		statrX = 0
+		startX = 0
 		startY = 0
 		width  = 40
 		height = 30
 	)
 
-	img := image.NewRGBA(image.Rect(statrX, startY, width, height))
+	img := image.NewRGBA(image.Rect(startX, startY, width, height))
 
 	for y := img.Rect.Min.Y; y < img.Rect.Max.Y; y++ {
 		for x := img.Rect.Min.X; x < img.Rect.Max.X; x++ {
@@ -60,12 +60,15 @@ func GenerateImage(colorCode string) (fileReader io.Reader, Err error) {
 		fileWriter = bufio.NewWriter(&buffer)
 	)
 
-	if v, Err := strconv.ParseInt(colorCode[len("#"):], 16, 32); Err != nil || v < 0 {
+	colorCodeHex := colorCode[len(colorPrefix):]
+	log.Println(colorCodeHex)
+
+	if v, Err := strconv.ParseInt(colorCodeHex, 16, 32); Err != nil || v < 0 {
 		log.Println("strconv: invalid value; not Hex")
 		return nil, Err
 	}
 
-	colorInfo, Err := ParseColorCode(colorCode)
+	colorInfo, Err := ParseColorCode(colorCodeHex)
 	if Err != nil {
 		log.Println(Err)
 		return nil, Err

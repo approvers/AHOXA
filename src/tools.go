@@ -51,21 +51,27 @@ func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 	commandBody := strings.Split(message.Content, " ")
 	switch commandBody[0][len(prefix):] {
 	case "color":
-		{
-			fileData, Err := GenerateImage(commandBody[1])
+		if len(commandBody) != 2 {
+			Err := context.messageSend("コマンドの形式が間違っています。`%help`を参照してください。")
 			if Err != nil {
-				log.Println("failed to genarateImage: ", Err)
+				log.Println("failed send message: ", Err)
 				return
 			}
-			Err = context.fileSend("unkonow.jpeg", fileData)
-			if Err != nil {
-				log.Println("failed file send: ", Err)
-				return
-			}
+			return
+		}
+		fileData, Err := GenerateImage(commandBody[1])
+		if Err != nil {
+			log.Println("failed to genarateImage: ", Err)
+			return
+		}
+		Err = context.fileSend("unkonow.jpeg", fileData)
+		if Err != nil {
+			log.Println("failed file send: ", Err)
+			return
+		}
 		}
 	default:
 		contentText := fetchMessage(commandBody[0][len(prefix):])
-			contentText := fetchMessage(commandBody[0])
 		Err := context.messageSend(contentText)
 		if Err != nil {
 			log.Println("failed send message: ", Err)
