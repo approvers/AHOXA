@@ -3,54 +3,54 @@ package src
 import (
 	"errors"
 	"fmt"
-	"github.com/bwmarrin/discordgo"
 	"log"
 	"regexp"
 	"strings"
 )
 
 var alphabetTable = map[string]string{
-	"a":     ".-",
-	"b":     "-...",
-	"c":     "-.-.",
-	"d":     "-..",
-	"e":     ".",
-	"f":     "..-.",
-	"g":     "--.",
-	"h":     "....",
-	"i":     "..",
-	"j":     ".---",
-	"k":     "-.-",
-	"l":     ".-..",
-	"m":     "--",
-	"n":     "-.",
-	"o":     "---",
-	"p":     ".--.",
-	"q":     "--.-",
-	"r":     ".-.",
-	"s":     "...",
-	"t":     "-",
-	"u":     "..-",
-	"v":     "...-",
-	"w":     ".--",
-	"x":     "-..-",
-	"y":     "-.--",
-	"z":     "--..",
-	".":     ".-.-.-",
-	",":     "--..--",
-	":":     "---...",
-	"?":     "..--..",
-	"'":     ".----.",
-	"-":     "-....-",
-	"(":     "-.--.",
-	")":     "-.--.-",
-	"/":     "-..-.",
-	"=":     "-...-.",
-	"+":     ".-.-.",
-	"\"":    ".-..-.",
-	"*":     "-..-",
-	"@":     ".--.-.",
-	"amend": "........",
+	"a":             ".-",
+	"b":             "-...",
+	"c":             "-.-.",
+	"d":             "-..",
+	"e":             ".",
+	"f":             "..-.",
+	"g":             "--.",
+	"h":             "....",
+	"i":             "..",
+	"j":             ".---",
+	"k":             "-.-",
+	"l":             ".-..",
+	"m":             "--",
+	"n":             "-.",
+	"o":             "---",
+	"p":             ".--.",
+	"q":             "--.-",
+	"r":             ".-.",
+	"s":             "...",
+	"t":             "-",
+	"u":             "..-",
+	"v":             "...-",
+	"w":             ".--",
+	"x":             "-..-",
+	"y":             "-.--",
+	"z":             "--..",
+	".":             ".-.-.-",
+	",":             "--..--",
+	":":             "---...",
+	"?":             "..--..",
+	"'":             ".----.",
+	"-":             "-....-",
+	"(":             "-.--.",
+	")":             "-.--.-",
+	"/":             "-..-.",
+	"=":             "-...-.",
+	"+":             ".-.-.",
+	"\"":            ".-..-.",
+	"*":             "-..-",
+	"@":             ".--.-.",
+	" ":             "*",
+	" ***amend*** ": "........",
 }
 
 func searchTable(morseInput string) (string, bool) {
@@ -81,22 +81,12 @@ func decode(sentence string) (response string, Err error) {
 	return
 }
 
-func DecodeMorse(session *discordgo.Session, message *discordgo.MessageCreate) {
-	if message.Author.Bot {
-		return
-	}
-	sentence := strings.TrimSpace(message.Content)
-	decodeResult, Err := decode(sentence)
+func DecodeMorse(messageContent string) (decodeResult string, Err error) {
+	sentence := strings.TrimSpace(messageContent)
+	decodeResult, Err = decode(sentence)
 	if Err != nil {
 		log.Println("Failed to decode:", Err)
-		_, Err = session.ChannelMessageSend(message.ChannelID, fmt.Sprintf("復号に失敗しました。: %s", Err))
-		if Err != nil {
-			log.Println("Error at ChannelMessageSend: ", Err)
-		}
 		return
 	}
-	_, Err = session.ChannelMessageSend(message.ChannelID, decodeResult)
-	if Err != nil {
-		log.Println("Error at ChannelMessageSend:", Err)
-	}
+	return
 }
