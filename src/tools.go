@@ -1,7 +1,6 @@
 package src
 
 import (
-	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"io"
 	"log"
@@ -34,16 +33,6 @@ func (cxt *messageContext) fileSend(fileName string, data io.Reader) (Err error)
 		return
 	}
 	return
-}
-
-func morseCodeOperation(optionalArgument string, codeType string) (answerSentence string, Err error) {
-	switch optionalArgument {
-	case "decode":
-		answerSentence, Err = DecodeMorse(codeType)
-		return
-	default:
-		return "", fmt.Errorf("Error at morseCodeOperation: No such operation.")
-	}
 }
 
 func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
@@ -79,24 +68,6 @@ func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 			log.Println("failed file send: ", Err)
 			return
 		}
-	case "morse":
-		if len(commandBody) < 2 {
-			Err := context.messageSend("コマンドの形式が間違っています。`%help`を参照してください。")
-			if Err != nil {
-				log.Println("failed send message: ", Err)
-				return
-			}
-			return
-		}
-		contentText, Err := morseCodeOperation(commandBody[1], context.m.Content[len("%morse decode"):])
-		if Err != nil {
-			log.Println("failed decode morse: ", Err)
-			return
-		}
-		Err = context.messageSend(contentText)
-		if Err != nil {
-			log.Println("failed send message: ", Err)
-			return
 		}
 	default:
 		contentText := fetchMessage(commandBody[0][len(prefix):])
