@@ -7,7 +7,10 @@ import (
 	"strings"
 )
 
-const prefix = "%"
+const (
+	prefix      = "%"
+	colorPrefix = "#"
+)
 
 type messageContext struct {
 	s *discordgo.Session
@@ -60,14 +63,13 @@ func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 				return
 			}
 		}
-	case "ping", "help":
-		{
+	default:
+		contentText := fetchMessage(commandBody[0][len(prefix):])
 			contentText := fetchMessage(commandBody[0])
-			Err := context.messageSend(contentText)
-			if Err != nil {
-				log.Println("failed send message: ", Err)
-				return
-			}
+		Err := context.messageSend(contentText)
+		if Err != nil {
+			log.Println("failed send message: ", Err)
+			return
 		}
 	}
 
