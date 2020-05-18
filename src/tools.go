@@ -40,7 +40,6 @@ func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 		session,
 		message,
 	}
-	const colorCodePrefix = "#"
 
 	if message.Author.ID == session.State.User.ID {
 		return
