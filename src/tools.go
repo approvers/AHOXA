@@ -36,8 +36,8 @@ func (cxt *messageContext) fileSend(fileName string, data io.Reader) (Err error)
 	return
 }
 
-func morseCodeOperation(optionalArgument string, codeType string) (answerSentence string, Err error) {
-	switch optionalArgument {
+func morseCodeOperation(mode string, codeType string) (answerSentence string, Err error) {
+	switch mode {
 	case "decode":
 		answerSentence, Err = DecodeMorse(codeType)
 		return
@@ -46,8 +46,34 @@ func morseCodeOperation(optionalArgument string, codeType string) (answerSentenc
 	}
 }
 
+func morseAction(command string, codeSentence string, context messageContext) {
+	contentText, Err := morseCodeOperation(command, codeSentence)
+	if Err != nil {
+		log.Println("failed decode morse: ", Err)
+		return
+	}
+	Err = context.messageSend(contentText)
+	if Err != nil {
+		log.Println("failed send message: ", Err)
+		return
+	}
+}
+
+func colorAction(command string, context messageContext) {
+	fileData, Err := GenerateImage(command)
+	if Err != nil {
+		log.Println("failed to genarateImage: ", Err)
+		return
+	}
+	Err = context.fileSend("unkonow.jpeg", fileData)
+	if Err != nil {
+		log.Println("failed file send: ", Err)
+		return
+	}
+}
+
 func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
-	context := messageContext{
+	Context := messageContext{
 		session,
 		message,
 	}
@@ -62,45 +88,27 @@ func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 	switch commandBody[0][len(prefix):] {
 	case "color":
 		if len(commandBody) != 2 {
-			Err := context.messageSend("コマンドの形式が間違っています。`%help`を参照してください。")
+			Err := Context.messageSend("コマンドの形式が間違っています。`%help`を参照してください。")
 			if Err != nil {
 				log.Println("failed send message: ", Err)
 				return
 			}
 			return
 		}
-		fileData, Err := GenerateImage(commandBody[1])
-		if Err != nil {
-			log.Println("failed to genarateImage: ", Err)
-			return
-		}
-		Err = context.fileSend("unkonow.jpeg", fileData)
-		if Err != nil {
-			log.Println("failed file send: ", Err)
-			return
-		}
+		colorAction(commandBody[1], Context)
 	case "morse":
 		if len(commandBody) < 2 {
-			Err := context.messageSend("コマンドの形式が間違っています。`%help`を参照してください。")
+			Err := Context.messageSend("コマンドの形式が間違っています。`%help`を参照してください。")
 			if Err != nil {
 				log.Println("failed send message: ", Err)
 				return
 			}
 			return
 		}
-		contentText, Err := morseCodeOperation(commandBody[1], context.m.Content[len("%morse decode"):])
-		if Err != nil {
-			log.Println("failed decode morse: ", Err)
-			return
-		}
-		Err = context.messageSend(contentText)
-		if Err != nil {
-			log.Println("failed send message: ", Err)
-			return
-		}
+		morseAction(commandBody[1], Context.m.Content[len("%morse decode"):], Context)
 	default:
 		contentText := fetchMessage(commandBody[0][len(prefix):])
-		Err := context.messageSend(contentText)
+		Err := Context.messageSend(contentText)
 		if Err != nil {
 			log.Println("failed send message: ", Err)
 			return

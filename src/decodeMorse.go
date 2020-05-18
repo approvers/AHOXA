@@ -62,6 +62,7 @@ var alphabetTable = map[string]string{
 	"$":             "...-..-",
 	"@":             ".--.-.",
 	" ***amend*** ": "........",
+	" ":             "*",
 }
 
 func searchTable(morseInput string) (string, bool) {
@@ -75,7 +76,7 @@ func searchTable(morseInput string) (string, bool) {
 }
 
 func decode(sentence string) (response string, Err error) {
-	reg := regexp.MustCompile(`[ \t]+`)
+	reg := regexp.MustCompile(`\s+`)
 	sentence = reg.ReplaceAllString(sentence, " ")
 	log.Printf(sentence)
 	for _, part := range strings.Split(sentence, " ") {
