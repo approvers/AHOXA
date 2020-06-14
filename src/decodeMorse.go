@@ -103,10 +103,10 @@ func DecodeMorse(messageContent string) (decodeResult string, Err error) {
 	return
 }
 
-func morseCodeOperation(mode string, codeType string) (answerSentence string, Err error) {
+func morseCodeOperation(mode string, content string) (answerSentence string, Err error) {
 	switch mode {
 	case "decode":
-		answerSentence, Err = DecodeMorse(codeType)
+		answerSentence, Err = DecodeMorse(content)
 		return
 	default:
 		return "", fmt.Errorf("Error at morseCodeOperation: No such operation.")
