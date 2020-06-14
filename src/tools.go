@@ -15,7 +15,7 @@ const (
 
 type messageContext struct {
 	s *discordgo.Session
-	m *discordgo.MessageCreate
+	m *discordgo.Message
 }
 
 func (cxt *messageContext) messageSend(message string) (Err error) {
@@ -37,7 +37,6 @@ func (cxt *messageContext) fileSend(fileName string, data io.Reader) (Err error)
 }
 
 func MessageCreate(session *discordgo.Session, message *discordgo.Message) {
-func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
 	Context := messageContext{
 		session,
 		message,
