@@ -1,11 +1,11 @@
 package src
 
 import (
-	"fmt"
-	"github.com/bwmarrin/discordgo"
 	"io"
 	"log"
 	"strings"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 const (
@@ -36,42 +36,7 @@ func (cxt *messageContext) fileSend(fileName string, data io.Reader) (Err error)
 	return
 }
 
-func morseCodeOperation(mode string, codeType string) (answerSentence string, Err error) {
-	switch mode {
-	case "decode":
-		answerSentence, Err = DecodeMorse(codeType)
-		return
-	default:
-		return "", fmt.Errorf("Error at morseCodeOperation: No such operation.")
-	}
-}
-
-func morseAction(command string, codeSentence string, context messageContext) {
-	contentText, Err := morseCodeOperation(command, codeSentence)
-	if Err != nil {
-		log.Println("failed decode morse: ", Err)
-		return
-	}
-	Err = context.messageSend(contentText)
-	if Err != nil {
-		log.Println("failed send message: ", Err)
-		return
-	}
-}
-
-func colorAction(command string, context messageContext) {
-	fileData, Err := GenerateImage(command)
-	if Err != nil {
-		log.Println("failed to genarateImage: ", Err)
-		return
-	}
-	Err = context.fileSend("unkonow.jpeg", fileData)
-	if Err != nil {
-		log.Println("failed file send: ", Err)
-		return
-	}
-}
-
+func MessageCreate(session *discordgo.Session, message *discordgo.Message) {
 func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
 	Context := messageContext{
 		session,

@@ -102,3 +102,26 @@ func DecodeMorse(messageContent string) (decodeResult string, Err error) {
 	}
 	return
 }
+
+func morseCodeOperation(mode string, codeType string) (answerSentence string, Err error) {
+	switch mode {
+	case "decode":
+		answerSentence, Err = DecodeMorse(codeType)
+		return
+	default:
+		return "", fmt.Errorf("Error at morseCodeOperation: No such operation.")
+	}
+}
+
+func morseAction(command string, codeSentence string, context messageContext) {
+	contentText, Err := morseCodeOperation(command, codeSentence)
+	if Err != nil {
+		log.Println("failed decode morse: ", Err)
+		return
+	}
+	Err = context.messageSend(contentText)
+	if Err != nil {
+		log.Println("failed send message: ", Err)
+		return
+	}
+}

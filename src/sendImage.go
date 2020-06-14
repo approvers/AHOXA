@@ -94,3 +94,16 @@ func GenerateImage(colorCode string) (fileReader io.Reader, Err error) {
 	log.Println("generatedImage: process ended")
 	return
 }
+
+func colorAction(command string, context messageContext) {
+	fileData, Err := GenerateImage(command)
+	if Err != nil {
+		log.Println("failed to genarateImage: ", Err)
+		return
+	}
+	Err = context.fileSend("unkonow.jpeg", fileData)
+	if Err != nil {
+		log.Println("failed file send: ", Err)
+		return
+	}
+}
