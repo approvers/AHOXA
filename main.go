@@ -33,7 +33,7 @@ func main() {
 	return
 }
 
-func loadToken() (token string) {
-	token = os.Getenv("DISCORD_TOKEN")
-	return
+func loadToken() string {
+	token := os.Getenv("DISCORD_TOKEN")
+	return token
 }
