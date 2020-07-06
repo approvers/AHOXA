@@ -22,7 +22,6 @@ func (cxt *messageContext) messageSend(message string) (Err error) {
 	_, Err = cxt.s.ChannelMessageSend(cxt.m.ChannelID, message)
 	if Err != nil {
 		log.Println("failed send message: ", Err)
-		return
 	}
 	return
 }
@@ -31,7 +30,6 @@ func (cxt *messageContext) fileSend(fileName string, data io.Reader) (Err error)
 	_, Err = cxt.s.ChannelFileSend(cxt.m.ChannelID, fileName, data)
 	if Err != nil {
 		log.Println("failed send file: ", Err)
-		return
 	}
 	return
 }
@@ -75,7 +73,6 @@ func MessageCreate(session *discordgo.Session, message *discordgo.Message) {
 		Err := Context.messageSend(contentText)
 		if Err != nil {
 			log.Println("failed send message: ", Err)
-			return
 		}
 	}
 

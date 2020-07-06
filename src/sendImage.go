@@ -71,7 +71,7 @@ func GenerateImage(colorCode string) (fileReader io.Reader, Err error) {
 	colorInfo, Err := ParseColorCode(colorCodeHex)
 	if Err != nil {
 		log.Println(Err)
-		return nil, Err
+		return
 	}
 
 	colorImage := genImage(colorInfo)
