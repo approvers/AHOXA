@@ -13,6 +13,10 @@ import (
 
 func main() {
 	discordBrain, err := discordgo.New()
+	if err != nil {
+		fmt.Println("Error: discordgo.New(): something wrong.")
+		fmt.Println(err)
+	}
 
 	discordToken := loadToken()
 	if discordToken == "" {
@@ -20,10 +24,6 @@ func main() {
 		return
 	}
 	discordBrain.Token = discordToken
-	if err != nil {
-		fmt.Println("Error logging in")
-		fmt.Println(err)
-	}
 
 	discordBrain.AddHandler(command.MessageCreate)
 
