@@ -13,8 +13,7 @@ import (
 func main() {
 	discordBrain, err := discordgo.New()
 	if err != nil {
-		fmt.Println("Error: discordgo.New(): something wrong.")
-		fmt.Println(err)
+		panic(err)
 	}
 
 	discordToken := loadToken()
@@ -26,10 +25,10 @@ func main() {
 	discordBrain.AddHandler(command.MessageCreate)
 
 	err = discordBrain.Open()
-	defer discordBrain.Close()
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
+	defer discordBrain.Close()
 
 	fmt.Println("Bot起動完了、命令待機中")
 	discordBrain.AddHandlerOnce(command.BootNotify)
