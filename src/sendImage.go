@@ -4,13 +4,12 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/bwmarrin/discordgo"
 	"image"
 	"image/color"
 	"image/jpeg"
+	"io"
 	"log"
 	"strconv"
-	"strings"
 )
 
 func ParseColorCode(colorCode string) (Result color.RGBA, Err error) {
@@ -39,13 +38,13 @@ func ParseColorCode(colorCode string) (Result color.RGBA, Err error) {
 
 func genImage(colorInfo color.RGBA) *image.RGBA {
 	const (
-		statrX = 0
+		startX = 0
 		startY = 0
 		width  = 40
 		height = 30
 	)
 
-	img := image.NewRGBA(image.Rect(statrX, startY, width, height))
+	img := image.NewRGBA(image.Rect(startX, startY, width, height))
 
 	for y := img.Rect.Min.Y; y < img.Rect.Max.Y; y++ {
 		for x := img.Rect.Min.X; x < img.Rect.Max.X; x++ {
@@ -55,40 +54,29 @@ func genImage(colorInfo color.RGBA) *image.RGBA {
 	return img
 }
 
-func GenerateImage(session *discordgo.Session, message *discordgo.MessageCreate) {
-
-	content := strings.TrimSpace(message.Content)
-	if !strings.HasPrefix(content, "#") {
-		return
-	}
-
-	if v, Err := strconv.ParseInt(content[1:], 16, 32); Err != nil || v < 0 {
-		log.Println("strconv: invalid value; not Hex")
-		return
-	}
-
-	colorCode := content[len("#"):]
-	if len(colorCode) != 6 {
-		log.Println("generateImage: len(colorCode) must be just 6")
-		_, Err := session.ChannelMessageSend(message.ChannelID, "不正な値です。形式は16進のカラーコードである必要があります。")
-		if Err != nil {
-			log.Println(Err)
-		}
-		return
-	}
-
-	colorInfo, Err := ParseColorCode(colorCode)
-	if Err != nil {
-		log.Println(Err)
-		return
-	}
-
-	colorImage := genImage(colorInfo)
+func GenerateImage(colorCode string) (fileReader io.Reader, Err error) {
 	var (
 		buffer     bytes.Buffer
 		fileWriter = bufio.NewWriter(&buffer)
-		fileReader = bufio.NewReader(&buffer)
 	)
+
+	colorCodeHex := colorCode[len(colorPrefix):]
+	log.Println(colorCodeHex)
+
+	if v, Err := strconv.ParseInt(colorCodeHex, 16, 32); Err != nil || v < 0 {
+		log.Println("strconv: invalid value; not Hex")
+		return nil, Err
+	}
+
+	colorInfo, Err := ParseColorCode(colorCodeHex)
+	if Err != nil {
+		log.Println(Err)
+		return nil, Err
+	}
+
+	colorImage := genImage(colorInfo)
+
+	fileReader = bufio.NewReader(&buffer)
 
 	Err = jpeg.Encode(fileWriter, colorImage, &jpeg.Options{Quality: 60})
 	if Err != nil {
@@ -104,10 +92,18 @@ func GenerateImage(session *discordgo.Session, message *discordgo.MessageCreate)
 	}
 
 	log.Println("generatedImage: process ended")
+	return
+}
 
-	_, Err = session.ChannelFileSend(message.ChannelID, "sample.jpeg", fileReader)
+func colorAction(command string, context messageContext) {
+	fileData, Err := GenerateImage(command)
 	if Err != nil {
-		log.Println(Err)
+		log.Println("failed to genarateImage: ", Err)
+		return
+	}
+	Err = context.fileSend("unkonow.jpeg", fileData)
+	if Err != nil {
+		log.Println("failed file send: ", Err)
 		return
 	}
 }
