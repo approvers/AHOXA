@@ -3,6 +3,7 @@ package main
 import (
 	command "change-status-go/src"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,7 +13,13 @@ import (
 
 func main() {
 	discordBrain, err := discordgo.New()
-	discordBrain.Token = loadToken()
+
+	discordToken := loadToken()
+	if discordToken == "" {
+		log.Println("Error: no discord token exists.")
+		return
+	}
+	discordBrain.Token = discordToken
 	if err != nil {
 		fmt.Println("Error logging in")
 		fmt.Println(err)
