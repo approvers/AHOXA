@@ -1,31 +1,26 @@
 package main
 
 import (
+	"change-status-go/secret"
 	command "change-status-go/src"
 	"fmt"
-	"log"
+	"github.com/bwmarrin/discordgo"
 	"os"
 	"os/signal"
 	"syscall"
-
-	"github.com/bwmarrin/discordgo"
 )
 
 func main() {
 	discordBrain, err := discordgo.New()
+	discordBrain.Token = secret.Token
 	if err != nil {
-		fmt.Println("Error: discordgo.New(): something wrong.")
+		fmt.Println("Error logging in")
 		fmt.Println(err)
 	}
 
-	discordToken := loadToken()
-	if discordToken == "" {
-		log.Println("Error: no discord token exists.")
-		return
-	}
-	discordBrain.Token = discordToken
-
 	discordBrain.AddHandler(command.MessageCreate)
+	discordBrain.AddHandler(command.GenerateImage)
+	discordBrain.AddHandler(command.DecodeMorse)
 
 	err = discordBrain.Open()
 	if err != nil {
@@ -38,8 +33,4 @@ func main() {
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
 	return
-}
-
-func loadToken() string {
-	return os.Getenv("DISCORD_TOKEN")
 }
