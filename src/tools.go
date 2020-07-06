@@ -61,7 +61,7 @@ func MessageCreate(session *discordgo.Session, message *discordgo.Message) {
 		}
 		colorAction(commandBody[1], Context)
 	case "morse":
-		if len(commandBody) < 2 {
+		if len(commandBody) != 2 {
 			Err := Context.messageSend("コマンドの形式が間違っています。`%help`を参照してください。")
 			if Err != nil {
 				log.Println("failed send message: ", Err)
