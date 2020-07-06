@@ -3,57 +3,66 @@ package src
 import (
 	"errors"
 	"fmt"
-	"github.com/bwmarrin/discordgo"
 	"log"
 	"regexp"
 	"strings"
 )
 
-const (
-	prefixMorseDecode = "%decode"
-)
-
 var alphabetTable = map[string]string{
-	"a":     ".-",
-	"b":     "-...",
-	"c":     "-.-.",
-	"d":     "-..",
-	"e":     ".",
-	"f":     "..-.",
-	"g":     "--.",
-	"h":     "....",
-	"i":     "..",
-	"j":     ".---",
-	"k":     "-.-",
-	"l":     ".-..",
-	"m":     "--",
-	"n":     "-.",
-	"o":     "---",
-	"p":     ".--.",
-	"q":     "--.-",
-	"r":     ".-.",
-	"s":     "...",
-	"t":     "-",
-	"u":     "..-",
-	"v":     "...-",
-	"w":     "-..-",
-	"x":     "-..-",
-	"z":     "--..",
-	".":     ".--.-.",
-	",":     "--..--",
-	":":     "---...",
-	"?":     "..--..",
-	"'":     ".----.",
-	"-":     "-....-",
-	"(":     "-.--.",
-	")":     "-.--.-",
-	"/":     "-..-.",
-	"=":     "-...-.",
-	"+":     ".-.-.-",
-	"\"":    ".-..-.",
-	"*":     "-..-",
-	"@":     ".--.-.",
-	"amend": "........",
+	"a":             ".-",
+	"b":             "-...",
+	"c":             "-.-.",
+	"d":             "-..",
+	"e":             ".",
+	"f":             "..-.",
+	"g":             "--.",
+	"h":             "....",
+	"i":             "..",
+	"j":             ".---",
+	"k":             "-.-",
+	"l":             ".-..",
+	"m":             "--",
+	"n":             "-.",
+	"o":             "---",
+	"p":             ".--.",
+	"q":             "--.-",
+	"r":             ".-.",
+	"s":             "...",
+	"t":             "-",
+	"u":             "..-",
+	"v":             "...-",
+	"w":             ".--",
+	"x":             "-..-",
+	"y":             "-.--",
+	"z":             "--..",
+	"0":             "-----",
+	"1":             ".----",
+	"2":             "..---",
+	"3":             "...--",
+	"4":             "....-",
+	"5":             ".....",
+	"6":             "-....",
+	"7":             "--...",
+	"8":             "---..",
+	"9":             "----.",
+	".":             ".-.-.-",
+	",":             "--..--",
+	"?":             "..--..",
+	"'":             ".----.",
+	"!":             "-.-.--",
+	"/":             "-..-.",
+	"&":             ".-...",
+	":":             "---...",
+	";":             "-.-.-.",
+	"=":             "-...-",
+	"+":             ".-.-.",
+	"-":             "-....-",
+	"_":             "..--.-",
+	"\"":            ".-..-.",
+	"$":             "...-..-",
+	"@":             ".--.-.",
+	" ***amend*** ": "........",
+	" ":             "*",
 }
 
 func searchTable(morseInput string) (string, bool) {
@@ -67,7 +76,7 @@ func searchTable(morseInput string) (string, bool) {
 }
 
 func decode(sentence string) (response string, Err error) {
-	reg := regexp.MustCompile(`[ \t]+`)
+	reg := regexp.MustCompile(`\s+`)
 	sentence = reg.ReplaceAllString(sentence, " ")
 	log.Printf(sentence)
 	for _, part := range strings.Split(sentence, " ") {
@@ -84,25 +93,35 @@ func decode(sentence string) (response string, Err error) {
 	return
 }
 
-func DecodeMorse(session *discordgo.Session, message *discordgo.MessageCreate) {
-	if message.Author.Bot {
-		return
-	}
-	if !strings.HasPrefix(message.Content, prefixMorseDecode) {
-		return
-	}
-	sentence := strings.TrimSpace(message.Content[len(prefixMorseDecode):])
-	decodeResult, Err := decode(sentence)
+func DecodeMorse(messageContent string) (decodeResult string, Err error) {
+	sentence := strings.TrimSpace(messageContent)
+	decodeResult, Err = decode(sentence)
 	if Err != nil {
 		log.Println("Failed to decode:", Err)
-		_, Err = session.ChannelMessageSend(message.ChannelID, fmt.Sprintf("復号に失敗しました。: %s", Err))
-		if Err != nil {
-			log.Println("Error at ChannelMessageSend: ", Err)
-		}
 		return
 	}
-	_, Err = session.ChannelMessageSend(message.ChannelID, decodeResult)
+	return
+}
+
+func morseCodeOperation(mode string, content string) (answerSentence string, Err error) {
+	switch mode {
+	case "decode":
+		answerSentence, Err = DecodeMorse(content)
+		return
+	default:
+		return "", fmt.Errorf("Error at morseCodeOperation: No such operation.")
+	}
+}
+
+func morseAction(command string, codeSentence string, context messageContext) {
+	contentText, Err := morseCodeOperation(command, codeSentence)
 	if Err != nil {
-		log.Println("Error at ChannelMessageSend:", Err)
+		log.Println("failed decode morse: ", Err)
+		return
+	}
+	Err = context.messageSend(contentText)
+	if Err != nil {
+		log.Println("failed send message: ", Err)
+		return
 	}
 }
