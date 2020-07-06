@@ -41,6 +41,5 @@ func main() {
 }
 
 func loadToken() string {
-	token := os.Getenv("DISCORD_TOKEN")
-	return token
+	return os.Getenv("DISCORD_TOKEN")
 }
