@@ -1,55 +1,43 @@
 package main
 
 import (
+	command "change-status-go/src"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/bwmarrin/discordgo"
-	"log"
-	"strings"
 )
 
-var (
-	Token = "Bot Njk5OTM0MTQ5NzI0NzMzNTIw.XpcOmQ.4laodM1AugWukek0aPpl-glBfEU"
-	BotName = "699934149724733520"
-	StopBot = make(chan bool)
-	Hello = "!hello"
-)
 func main() {
-	var discord, err = discordgo.New()
-	discord.Token = Token
+	discordBrain, err := discordgo.New()
 	if err != nil {
-		fmt.Println("Error logged in")
-		fmt.Println(err)
+		panic(err)
 	}
 
-	discord.AddHandler(onMessageCreate)
-
-	err = discord.Open()
-	if err != nil {
-		fmt.Println(err)
+	discordToken := loadToken()
+	if discordToken == "" {
+		panic("no discord token exists.")
 	}
+	discordBrain.Token = discordToken
 
-	fmt.Println("Listening...")
-	<-StopBot
+	discordBrain.AddHandler(command.MessageCreate)
+
+	err = discordBrain.Open()
+	if err != nil {
+		panic(err)
+	}
+	defer discordBrain.Close()
+
+	fmt.Println("Bot起動完了、命令待機中")
+	discordBrain.AddHandlerOnce(command.BootNotify)
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-sc
 	return
 }
 
-func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	c, err := s.State.Channel(m.ChannelID)
-	if err != nil {
-		log.Println("Error getting channel: ", err)
-		return
-	}
-
-	if strings.HasPrefix(m.Content, fmt.Sprintf("%s", Hello)) {
-		sendMessage(s, c, "Hello world!")
-	}
-}
-
-func sendMessage(s *discordgo.Session, c *discordgo.Channel, msg string) {
-	_, err := s.ChannelMessageSend(c.ID, msg)
-
-	log.Println(">>> " + msg)
-	if err != nil {
-		log.Println("Error sending message: ", err)
-	}
+func loadToken() string {
+	return os.Getenv("DISCORD_TOKEN")
 }
