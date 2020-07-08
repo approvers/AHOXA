@@ -34,10 +34,10 @@ func (cxt *messageContext) fileSend(fileName string, data io.Reader) (Err error)
 	return
 }
 
-func MessageCreate(session *discordgo.Session, message *discordgo.Message) {
+func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
 	Context := messageContext{
 		session,
-		message,
+		message.Message,
 	}
 
 	if message.Author.ID == session.State.User.ID {
