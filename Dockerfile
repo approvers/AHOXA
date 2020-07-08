@@ -5,7 +5,7 @@ WORKDIR /src
 RUN go build -a -tags netgo -installsuffix netgo -o change-status-go
 
 
-FROM scratch
+FROM alpine:3.12
 COPY --from=build /src/change-status-go /bot/
 WORKDIR /bot/
 ENTRYPOINT [ "/bot/change-status-go" ]
