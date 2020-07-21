@@ -9,7 +9,7 @@ on:
       - v*
 
 env:
-  IMAGE_NAME: AHOXA
+  IMAGE_NAME: ahoxa
 
 jobs:
   push:
