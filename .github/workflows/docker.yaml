@@ -10,7 +10,7 @@ on:
 
 env:
   IMAGE_NAME: ahoxa
-  REPO_NAME: ahoxa
+  REPO_NAME: approvers/ahoxa
 
 jobs:
   push:
