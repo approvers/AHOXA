@@ -9,7 +9,7 @@ on:
       - v*
 
 env:
-  IMAGE_NAME: change-status-go
+  IMAGE_NAME: ahoxa
 
 jobs:
   push:
